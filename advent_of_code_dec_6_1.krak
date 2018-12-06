@@ -1,0 +1,59 @@
+import io:*
+import str:*
+import vec:*
+import set:*
+import util:*
+
+fun abs(a: int): int {
+    if a < 0 {
+        return 0-a
+    } else {
+        return a
+    }
+}
+
+
+fun main(argc: int, argv: **char): int {
+    println(read_file(str(argv[1])))
+    var a = read_file(str(argv[1])).slice(0,-2).lines().map(fun(l: str): pair<int, int> {
+        var s = l.split(", ")
+        return make_pair(string_to_num<int>(s[0]), string_to_num<int>(s[1]))
+    })
+
+    var num = map<pair<int,int>, int>()
+    for (var i = 0; i < a.size; i++;)
+        num[a[i]] = 0
+    for (var x = -1000; x <= 1000; x++;) {
+        for (var y = -1000; y <= 1000; y++;) {
+            var min = make_pair(make_pair(0,0), 100000+100000)
+            var min_invalid = false
+            for (var i = 0; i < a.size; i++;) {
+                var dist = abs(x - a[i].first) + abs(y - a[i].second)
+                if (min.second > dist) {
+                    min = make_pair(a[i], dist)
+                    min_invalid = false
+                } else if (min.second == dist) {
+                    min_invalid = true
+                }
+            }
+            /*num[min.first] += 1*/
+            /*println(str("trying to access at ") + min.first.first + ", " + min.first.second)*/
+            if !min_invalid {
+                num[min.first] = num[min.first] + 1
+            }
+            if x == -1000 || x == 1000 || y == -1000 || y == 1000 {
+                var value = -1000*1000 * 1000 * 1
+                num[min.first] = value
+            }
+        }
+    }
+
+
+    var max = make_pair(make_pair(0,0), 0)
+    for (var i = 0; i < a.size; i++;)
+        if (max.second < num[a[i]])
+            max = make_pair(a[i], num[a[i]])
+
+    println(str("winner is ") + max.first.first + ", " + max.first.second + " with " + max.second)
+
+}

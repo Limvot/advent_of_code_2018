@@ -1,0 +1,40 @@
+import io:*
+import str:*
+import vec:*
+import set:*
+import util:*
+
+fun abs(a: int): int {
+    if a < 0 {
+        return 0-a
+    } else {
+        return a
+    }
+}
+
+
+fun main(argc: int, argv: **char): int {
+    println(read_file(str(argv[1])))
+    var a = read_file(str(argv[1])).slice(0,-2).lines().map(fun(l: str): pair<int, int> {
+        var s = l.split(", ")
+        return make_pair(string_to_num<int>(s[0]), string_to_num<int>(s[1]))
+    })
+
+    var region_size = 0
+    for (var x = -1000; x <= 1500; x++;) {
+        for (var y = -1000; y <= 1500; y++;) {
+            var running_total = 0
+            for (var i = 0; i < a.size; i++;) {
+                running_total += abs(x - a[i].first) + abs(y - a[i].second)
+            }
+            if running_total < 10000 {
+            /*if running_total < 32 {*/
+                region_size++
+            }
+        }
+    }
+
+
+    println(str("region size is ") + region_size)
+
+}
