@@ -1,0 +1,43 @@
+import io:*
+import str:*
+import vec:*
+import set:*
+import util:*
+
+fun react(a: str): int {
+    var changed = true
+    while (changed) {
+        changed = false
+        for (var i = 0; i < a.length()-1; i++;) {
+            if (a[i] == a[i+1] -32 || a[i] == a[i+1] +32) {
+                a = a.slice(0,i) + a.slice(i+2,-1)
+                changed = true
+                break
+            }
+        }
+    }
+    return a.length()
+}
+
+fun main(argc: int, argv: **char): int {
+    println(read_file(str(argv[1])))
+    var a = read_file(str(argv[1])).slice(0,-2)
+    /*a = "dabAcCaCBAcCcaDAa"*/
+
+    var units = from_vector(a.data.filter(fun(c: char): bool return c > 96;)).data
+    var units_str.construct(units):str
+    println("units str " + units_str)
+    var lowest = make_pair('-', a.length())
+    for (var i = 0; i < units.size; i++;) {
+        println(str("testing unit ") + units[i])
+        println("filtering")
+        var filtered_string.construct(a.data.filter(fun(c:char ): bool return c != units[i] && c != units[i] - 32;)): str
+
+        println("reacting")
+        var rep = make_pair(units[i], react(filtered_string))
+        if (rep.second < lowest.second)
+            lowest = rep
+    }
+    println(" char is " + str(lowest.first) + " with length " + lowest.second)
+
+}

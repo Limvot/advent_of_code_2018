@@ -1,0 +1,29 @@
+import io:*
+import str:*
+import vec:*
+import set:*
+import util:*
+
+
+fun main(argc: int, argv: **char): int {
+    println(read_file(str(argv[1])))
+    var a = read_file(str(argv[1]))
+    /*a = "dabAcCaCBAcCcaDAa"*/
+
+    var changed = true
+    while (changed) {
+        changed = false
+        for (var i = 0; i < a.length()-1; i++;) {
+            if (a[i] == a[i+1] -32 || a[i] == a[i+1] +32) {
+                a = a.slice(0,i) + a.slice(i+2,-1)
+                changed = true
+                break
+            }
+        }
+    }
+    println(str("remainging ") + a.length() + " " + a)
+    // for newline
+    println(str("remainging ") + a.length() - 1)
+
+
+}
