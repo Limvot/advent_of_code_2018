@@ -1,0 +1,103 @@
+import io:*
+import str:*
+import vec:*
+import set:*
+import util:*
+
+import queue:*
+import map:*
+
+fun char_comp(left: ref char, right: ref char): bool {
+    return left <= right
+}
+
+fun main(argc: int, argv: **char): int {
+    println(read_file(str(argv[1])))
+    var a = read_file(str(argv[1])).slice(0,-2).lines()
+
+    var deps = map<char, set<char>>()
+    var done = set<char>()
+    var started = set<char>()
+
+    for (var i = 0; i < a.size; i++;) {
+        var split = a[i].split(" ")
+        var d = split[1][0]
+        var x = split[7][0]
+        if !deps.contains_key(d) {
+            deps[d] = set<char>()
+        }
+        if !deps.contains_key(x) {
+            deps[x] = set(d)
+        } else {
+            deps[x].add(d)
+        }
+    }
+    var workers = vec<pair<char,int>>()
+    for (var i = 0; i < 5; i++;)
+        workers.add(make_pair('-', 0))
+    var time = 0
+    var order = vec<char>()
+    while done.size() != deps.size() {
+        var possibilities = vec<char>()
+        deps.for_each(fun(v: char, ods: set<char>) {
+            if !started.contains(v) && done.contains(ods) {
+                possibilities.add(v)
+            }
+        })
+        possibilities = possibilities.sorted(char_comp)
+
+        for (var i = 0; i < workers.size; i++;) {
+            if workers[i].second == 0  {
+                if workers[i].first != '-' {
+                    println(str("worker ") + i + str(" done with ") + workers[i].first + " at time " + time)
+                    done.add(workers[i].first)
+                    order.add(workers[i].first)
+                    workers[i].first = '-'
+
+                    possibilities = vec<char>()
+                    deps.for_each(fun(v: char, ods: set<char>) {
+                        if !started.contains(v) && done.contains(ods) {
+                            possibilities.add(v)
+                        }
+                    })
+                    possibilities = possibilities.sorted(char_comp)
+                }
+                if possibilities.size != 0 {
+                    var c = possibilities.first()
+                    started.add(c)
+                    possibilities.remove(0)
+                    workers[i] = make_pair(c, 60 + (c - 64) - 1)
+                    /*workers[i] = make_pair(c, 0 + (c - 64) - 1)*/
+                    println(str("worker ") + i + str(" starting ") + workers[i].first + " at time " + time)
+                }
+            } else {
+                workers[i].second -= 1
+            }
+        }
+        if order.size != deps.size() {
+            time++
+        }
+    }
+    while order.size != deps.size() {
+        for (var i = 0; i < workers.size; i++;) {
+            if workers[i].second == 0  {
+                if workers[i].first != '-' {
+                    order.add(workers[i].first)
+                    workers[i].first = '-'
+                    println(str("worker ") + i + str(" done with ") + workers[i].first + " at time " + time)
+                }
+            } else {
+                workers[i].second -= 1
+            }
+        }
+        if order.size != deps.size() {
+            time++
+        }
+    }
+    println()
+    for (var i = 0; i < order.size; i++;) {
+        print(order[i])
+    }
+    println(str("the time was ") + time)
+
+}
